@@ -1,0 +1,11 @@
+{
+  "name": "order_uk_backend",
+  "version": "1.0.0",
+  "description": "Backend for food ordering app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "K S Ponnanna",
+  "license": "ISC"
+}
