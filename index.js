@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 
 const indexRouter = require('./routes/index')
+const userRouter = require('./routes/user')
 
 dotenv.config()
 const app = express()
@@ -16,6 +17,7 @@ app.use(bodyParser.urlencoded({extended:true}))
 
 //routes
 app.use('/api/v1/', indexRouter)
+app.use('/api/v1/user', userRouter)
 
 app.listen(process.env.PORT, (req, res)=>{
     console.log(`Server started on port ${process.env.PORT}`)
