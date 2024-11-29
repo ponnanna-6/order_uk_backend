@@ -7,6 +7,7 @@ const cors = require('cors')
 const indexRouter = require('./routes/index')
 const userRouter = require('./routes/user')
 const restaurantRouter = require('./routes/restaurant')
+const foodItemsRouter = require('./routes/foodItems')
 
 dotenv.config()
 const app = express()
@@ -20,6 +21,7 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.use('/api/v1/', indexRouter)
 app.use('/api/v1/user', userRouter)
 app.use('/api/v1/restaurant', restaurantRouter)
+app.use('/api/v1/foodItems', foodItemsRouter)
 
 app.listen(process.env.PORT, (req, res)=>{
     console.log(`Server started on port ${process.env.PORT}`)
