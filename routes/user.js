@@ -1,6 +1,7 @@
 const express = require('express')
 const bcrypt = require('bcrypt')
 const User = require('../schemas/user.schema')
+const Cart = require('../schemas/cart.schema')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 const { authMiddleware } = require('../middlewares/auth')
@@ -18,6 +19,7 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({ name, phone, email, password: hashedPassword });
         await newUser.save();
+        await new Cart({user: newUser._id}).save()
         return res.status(200).json({ message: "User created successfully!" });
     } catch (error) {
         return res.status(500).json({ message: "An error occurred. Please try again later.", error: error});
