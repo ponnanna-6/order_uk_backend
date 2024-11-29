@@ -75,6 +75,14 @@ const restaurantSchema = mongoose.Schema({
     mapLocation: {
         type: String,
         required: true
+    },
+    tagLine: {
+        type: String,
+        required: true
+    },
+    bgImg: {
+        type: String,
+        required: true
     }
 }) 
 

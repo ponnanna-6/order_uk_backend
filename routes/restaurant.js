@@ -10,16 +10,18 @@ router.post('/add', async (req, res) => {
     try {
         const { name, logo, rating,
             customerReviews, minOrder, deliveryInfo,
-            deliveryTime, contactInfo, openTill, mapLocation
+            deliveryTime, contactInfo, openTill,
+            mapLocation, tagLine, bgImg
         } = req.body;
 
-        if(!name || !logo || !rating || !customerReviews || !minOrder || !deliveryInfo || !deliveryTime || !contactInfo || !openTill || !mapLocation){
+        if(!name || !logo || !rating || !customerReviews || !minOrder || !deliveryInfo || !deliveryTime || !contactInfo || !openTill || !mapLocation || !tagLine || !bgImg) {
             return res.status(400).json({message: "All fields are required"});
         }
 
         const restaurant = new Restaurant({name, logo, rating,
             customerReviews, minOrder, deliveryInfo,
-            deliveryTime, contactInfo, openTill, mapLocation
+            deliveryTime, contactInfo, openTill,
+            mapLocation, tagLine, bgImg
         });
 
         await restaurant.save();
@@ -29,15 +31,28 @@ router.post('/add', async (req, res) => {
     }
 });
 
-//Fetch user by id
-router.get('/:id', authMiddleware, async (req, res) => {
+//Fetch restaurant by id
+router.get('/:id', async (req, res) => {
     try {
         const {id} = req.params
         const restaurant = await Restaurant.find({_id : id}).select('-__v');
-        if(!users.length){
+        if(!restaurant.length){
             return res.status(400).json({message:"Restaurant not found"});
         }
-        res.status(200).json(users);
+        res.status(200).json(restaurant[0]);
+    } catch (err) {
+        res.status(400).json(err);
+    }
+});
+
+//Fetch all restaurants
+router.get('/', async (req, res) => {
+    try {
+        const restaurant = await Restaurant.find({}).select('-__v');
+        if(!restaurant.length){
+            return res.status(400).json({message:"Restaurants not found"});
+        }
+        res.status(200).json(restaurant);
     } catch (err) {
         res.status(400).json(err);
     }
