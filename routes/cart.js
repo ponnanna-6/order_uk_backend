@@ -53,4 +53,24 @@ router.get('/id', authMiddleware, async (req, res) => {
     }
 });
 
+//rest cart
+router.delete('/delete', authMiddleware, async (req, res) => {
+    try {
+        const cart = await Cart.findOne({ user: req.user });
+
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
+        cart.items = [];
+        await cart.save();
+        return res.status(200).json({ message: "Cart deleted successfully!" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "An error occurred while deleting the cart. Please try again later.",
+            error,
+        });
+    }
+});
+
 module.exports = router;
