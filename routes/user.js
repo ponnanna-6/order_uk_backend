@@ -122,11 +122,13 @@ router.patch('/payment-method/update', async (req, res) => {
 });
 
 // Update delivery address
-router.patch('/address/update', async (req, res) => {
-    const { userId, addressId, updatedAddress } = req.body;
+router.patch('/address/update/:addressId', authMiddleware, async (req, res) => {
+    const userId = req.user;
+    const { addressId } = req.params;
+    const updatedAddress = req.body.updatedAddress;
 
     try {
-        const user = await UserModel.findById(userId);
+        const user = await User.findById(userId);
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -138,18 +140,11 @@ router.patch('/address/update', async (req, res) => {
             return res.status(404).json({ message: "Address not found" });
         }
 
-        Object.assign(address, updatedAddress);
-
-        // Ensure only one default address
-        if (updatedAddress.default) {
-            user.Addresses.forEach((addr) => {
-                if (addr._id.toString() !== addressId) {
-                    addr.default = false;
-                }
-            });
-        }
-
+        address.address = updatedAddress.address;
+        address.phoneNumber =  updatedAddress.phoneNumber; 
+        
         await user.save();
+
         return res.status(200).json({ message: "Address updated successfully!" });
     } catch (error) {
         return res.status(500).json({ message: "An error occurred", error });
@@ -158,7 +153,7 @@ router.patch('/address/update', async (req, res) => {
 
 // Add a new address
 router.post('/address/add', authMiddleware, async (req, res) => {
-    const {newAddress} = req.body;
+    const { newAddress } = req.body;
     const userId = req.user
 
     try {
@@ -180,6 +175,26 @@ router.post('/address/add', authMiddleware, async (req, res) => {
     }
 });
 
+// Add a new address
+router.delete('/address/delete/:id', authMiddleware, async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user
 
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        // If the new address is marked as default, unset other defaults
+        user.Addresses.forEach((addr) => (addr.default = false));
+
+        user.Addresses.remove(id);
+        await user.save();
+
+        return res.status(201).json({ message: "Address deleted successfully!", addresses: user.Addresses });
+    } catch (error) {
+        return res.status(500).json({ message: "An error occurred", error });
+    }
+});
 
 module.exports = router
