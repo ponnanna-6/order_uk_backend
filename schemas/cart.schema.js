@@ -32,6 +32,10 @@ const cartSchema = mongoose.Schema({
                         type: Number,
                         required: true
                     },
+                    image: {
+                        type: String,
+                        required: true
+                    }
                 },
                 required: true
             },

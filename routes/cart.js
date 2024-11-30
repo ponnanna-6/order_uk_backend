@@ -35,10 +35,9 @@ router.post('/add', authMiddleware, async (req, res) => {
 });
 
 // Get cart by user ID
-router.get('/id/:id', authMiddleware, async (req, res) => {
+router.get('/id', authMiddleware, async (req, res) => {
     try {
-        const { id } = req.params;
-        const cart = await Cart.findOne({ user: id });
+        const cart = await Cart.findOne({ user: req.user });
 
         if (!cart) {
             return res.status(404).json({ message: "Cart not found" });
