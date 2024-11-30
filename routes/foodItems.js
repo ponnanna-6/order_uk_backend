@@ -6,13 +6,13 @@ const FoodItem = require('../schemas/foodItem.schema')
 //add items
 router.post('/add', async (req, res) => {
     try {
-        const { name, descrption, price, image, restaurant} = req.body;
-
-        if(!name || !descrption || !price || !image || !restaurant) {
+        const { name, category,description, price, image, restaurant} = req.body;
+        
+        if(!name || !category || !description || !price || !image || !restaurant) {
             return res.status(400).json({message: "All fields are required"});
         }
 
-        const foodItem = new FoodItem({name, descrption, price, image, restaurant});
+        const foodItem = new FoodItem({name, category, description, price, image, restaurant});
 
         await foodItem.save();
         return res.status(200).json({ message: "Food item created successfully!" });
@@ -38,7 +38,7 @@ router.get('/:id', async (req, res) => {
 //Fetch all foods by restaurants
 router.get('/', async (req, res) => {
     try {
-        const foodItems = await FoodItem.find({restaurant: req.query.id}).select('-__v');
+        const foodItems = await FoodItem.find({}).select('-__v');
         if(!foodItems.length){
             return res.status(400).json({message:"Restaurants food not found"});
         }

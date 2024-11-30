@@ -1,16 +1,18 @@
 const express = require('express');
 const router = express.Router();
-
+const { authMiddleware } = require('../middlewares/auth');
 const Cart = require('../schemas/cart.schema');
 
 // Add items to the cart
-router.post('/add', async (req, res) => {
+router.post('/add', authMiddleware, async (req, res) => {
     try {
-        const { user, items } = req.body;
+        const user = req.user;
+        const {items} = req.body;
+        console.log(items)
 
         if (!user || !items || !Array.isArray(items)) {
             return res.status(400).json({ message: "User and items are required, and items must be an array." });
-        }
+        }   
 
         let cart = await Cart.findOne({ user });
 
@@ -27,6 +29,26 @@ router.post('/add', async (req, res) => {
         console.error(error);
         return res.status(500).json({
             message: "An error occurred while updating the cart. Please try again later.",
+            error,
+        });
+    }
+});
+
+// Get cart by user ID
+router.get('/id/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const cart = await Cart.findOne({ user: id });
+
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
+
+        return res.status(200).json({ cart });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "An error occurred while fetching the cart. Please try again later.",
             error,
         });
     }

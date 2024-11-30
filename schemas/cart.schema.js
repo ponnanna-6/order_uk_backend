@@ -13,13 +13,35 @@ const cartSchema = mongoose.Schema({
                 ref: 'FoodItem',
                 required: true
             },
+            foodInfo: {
+                type: {
+                    name: {
+                        type: String,
+                        required: true
+                    },
+                    category: {
+                        type: String,
+                        required: true,
+                        enum: ['burger', 'pizza', 'soups', 'salads', 'drinks']
+                    },
+                    description: {
+                        type: String,
+                        required: true
+                    },
+                    price: {
+                        type: Number,
+                        required: true
+                    },
+                },
+                required: true
+            },
             quantity: {
                 type: Number,
                 required: true,
                 default: 1
             }
         }],
-        required: false    
+        required: false
     }
 })
 

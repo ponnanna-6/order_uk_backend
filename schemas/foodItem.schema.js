@@ -5,6 +5,11 @@ const foodItemSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    category: {
+        type: String,
+        required: true,
+        enum: ['burger', 'pizza', 'soups', 'salads', 'drinks']
+    },
     description: {
         type: String,
         required: true
