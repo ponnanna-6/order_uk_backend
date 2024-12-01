@@ -53,6 +53,26 @@ router.get('/id', authMiddleware, async (req, res) => {
     }
 });
 
+//get cart by cart id
+router.get('/public/:id', async (req, res) => {
+    try {
+        const cartId = req.params.id;
+        const cart = await Cart.findById(cartId);
+
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
+
+        return res.status(200).json({ cart });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "An error occurred while fetching the cart. Please try again later.",
+            error,
+        });
+    }
+});
+
 //rest cart
 router.delete('/delete', authMiddleware, async (req, res) => {
     try {
