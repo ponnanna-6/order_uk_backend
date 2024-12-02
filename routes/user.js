@@ -65,61 +65,88 @@ router.get('/id/:id', authMiddleware, async (req, res) => {
 router.put('/update', authMiddleware, async (req, res) => {
     try {
         const id = req.user;
-        const { name, email, password, newPassword } = req.body;
+        const { name, email, gender, country } = req.body;
 
         const user = await User.findById(id);
         if (!user) {
             return res.status(400).json({ message: "User not found for id: " + id });
         }
-        if (newPassword.length) {
-            const compare = await bcrypt.compare(password, user.password)
-            if (!compare) {
-                return res.status(400).json({ message: "Password incorrect" })
-            }
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
-            await User.findByIdAndUpdate(id, { name, email, password: hashedPassword }, { new: false })
-        } else {
-            await User.findByIdAndUpdate(id, { name, email }, { new: false })
+        if (!name || !email || !gender || !country) {
+            return res.status(400).json({ message: "All fields are required" });
         }
+        user.name = name;
+        user.email = email;
+        user.gender = gender;
+        user.country = country;
+        await user.save();
         res.status(200).json({ message: "User updated successfully!" })
     } catch (error) {
         return res.status(500).json({ message: "An error occurred. Please try again later.", error: error });
     }
 });
 
-router.patch('/payment-method/update', async (req, res) => {
-    const { userId, paymentMethodId, updatedPaymentMethod } = req.body;
-
+router.post('/payment/add', authMiddleware, async (req, res) => {
     try {
-        const user = await UserModel.findById(userId);
+        const userId = req.user;
+        const { cardNumber, cvc, expiration, name, id } = req.body;
 
+        const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(400).json({ message: "User not found" });
         }
 
-        const paymentMethod = user.paymentMethods.id(paymentMethodId);
-
-        if (!paymentMethod) {
-            return res.status(404).json({ message: "Payment method not found" });
+        if (!cardNumber || !cvc || !expiration || !name) {
+            return res.status(400).json({ message: "All fields are required" });
         }
 
-        Object.assign(paymentMethod, updatedPaymentMethod);
-
-        // Ensure only one default payment method
-        if (updatedPaymentMethod.default) {
-            user.paymentMethods.forEach((method) => {
-                if (method._id.toString() !== paymentMethodId) {
-                    method.default = false;
-                }
-            });
+        if (id) {
+            const paymentMethodIndex = user.paymentMethods.findIndex(method => method._id.toString() === id);
+            console.log(paymentMethodIndex)
+            if (paymentMethodIndex !== -1) {
+                user.paymentMethods[paymentMethodIndex] = { cardNumber, cvc, expiration, name };
+                await user.save();
+                return res.status(200).json({ message: "Card updated successfully!" });
+            } else {
+                return res.status(400).json({ message: "Card not found" });
+            }
+        } else {
+            user.paymentMethods.push({ cardNumber, cvc, expiration, name });
+            await user.save();
+            return res.status(200).json({ message: "Card added successfully!" });
         }
-
-        await user.save();
-        return res.status(200).json({ message: "Payment method updated successfully!" });
     } catch (error) {
-        return res.status(500).json({ message: "An error occurred", error });
+        return res.status(500).json({ message: "An error occurred. Please try again later.", error: error });
     }
 });
+
+router.delete('/payment/remove/:id', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user;
+        const { id } = req.params;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(400).json({ message: "User not found" });
+        }
+
+        if(!id) {
+            return res.status(400).json({ message: "Card id is required" });
+        }
+
+        const paymentMethodIndex = user.paymentMethods.findIndex(method => method._id.toString() === id);
+
+        if (paymentMethodIndex === -1) {
+            return res.status(400).json({ message: "Card not found" });
+        }
+
+        user.paymentMethods.splice(paymentMethodIndex, 1);
+        await user.save();
+        return res.status(200).json({ message: "Card removed successfully!" });
+    } catch (error) {
+        return res.status(500).json({ message: "An error occurred. Please try again later.", error: error });
+    }
+});
+
 
 // Update delivery address
 router.patch('/address/update/:addressId', authMiddleware, async (req, res) => {
@@ -141,8 +168,8 @@ router.patch('/address/update/:addressId', authMiddleware, async (req, res) => {
         }
 
         address.address = updatedAddress.address;
-        address.phoneNumber =  updatedAddress.phoneNumber; 
-        
+        address.phoneNumber = updatedAddress.phoneNumber;
+
         await user.save();
 
         return res.status(200).json({ message: "Address updated successfully!" });
