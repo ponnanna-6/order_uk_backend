@@ -8,17 +8,17 @@ const { authMiddleware } = require('../middlewares/auth')
 //register user
 router.post('/add', async (req, res) => {
     try {
-        const { name, logo, rating,
+        const { name, logo, rating, address,
             customerReviews, minOrder, deliveryInfo,
             deliveryTime, contactInfo, openTill,
             mapLocation, tagLine, bgImg
         } = req.body;
 
-        if(!name || !logo || !rating || !customerReviews || !minOrder || !deliveryInfo || !deliveryTime || !contactInfo || !openTill || !mapLocation || !tagLine || !bgImg) {
+        if(!name || !address || !logo || !rating || !customerReviews || !minOrder || !deliveryInfo || !deliveryTime || !contactInfo || !openTill || !mapLocation || !tagLine || !bgImg) {
             return res.status(400).json({message: "All fields are required"});
         }
 
-        const restaurant = new Restaurant({name, logo, rating,
+        const restaurant = new Restaurant({name, logo, rating, address,
             customerReviews, minOrder, deliveryInfo,
             deliveryTime, contactInfo, openTill,
             mapLocation, tagLine, bgImg

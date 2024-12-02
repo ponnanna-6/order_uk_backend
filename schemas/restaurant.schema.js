@@ -13,6 +13,10 @@ const restaurantSchema = mongoose.Schema({
         type: Number,
         required: true
     },
+    address: {
+        type: String,
+        required: true
+    },
     customerReviews: {
         type: [{
             rating: {
@@ -62,6 +66,10 @@ const restaurantSchema = mongoose.Schema({
                 required: true
             },
             email: {
+                type: String,
+                required: true
+            },
+            website: {
                 type: String,
                 required: true
             }
