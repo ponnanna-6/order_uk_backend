@@ -153,7 +153,6 @@ router.patch('/address/update/:addressId', authMiddleware, async (req, res) => {
     const userId = req.user;
     const { addressId } = req.params;
     const updatedAddress = req.body.updatedAddress;
-
     try {
         const user = await User.findById(userId);
 
@@ -169,6 +168,9 @@ router.patch('/address/update/:addressId', authMiddleware, async (req, res) => {
 
         address.address = updatedAddress.address;
         address.phoneNumber = updatedAddress.phoneNumber;
+        address.state = updatedAddress.state;
+        address.district = updatedAddress.district;
+        address.pincode = updatedAddress.pincode;
 
         await user.save();
 
