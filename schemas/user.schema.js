@@ -5,6 +5,18 @@ const addressSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    state: {
+        type: String,
+        required: false
+    },
+    district: {
+        type: String,
+        required: false
+    },
+    pincode: {
+        type: String,
+        required: false
+    },
     phoneNumber: {
         type: String,
         required: true

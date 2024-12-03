@@ -196,7 +196,7 @@ router.post('/address/add', authMiddleware, async (req, res) => {
         user.Addresses.push(newAddress);
         await user.save();
 
-        return res.status(201).json({ message: "Address added successfully!", addresses: user.Addresses });
+        return res.status(200).json({ message: "Address added successfully!", addresses: user.Addresses });
     } catch (error) {
         return res.status(500).json({ message: "An error occurred", error });
     }
@@ -218,7 +218,7 @@ router.delete('/address/delete/:id', authMiddleware, async (req, res) => {
         user.Addresses.remove(id);
         await user.save();
 
-        return res.status(201).json({ message: "Address deleted successfully!", addresses: user.Addresses });
+        return res.status(200).json({ message: "Address deleted successfully!", addresses: user.Addresses });
     } catch (error) {
         return res.status(500).json({ message: "An error occurred", error });
     }
