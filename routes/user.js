@@ -71,7 +71,7 @@ router.put('/update', authMiddleware, async (req, res) => {
         if (!user) {
             return res.status(400).json({ message: "User not found for id: " + id });
         }
-        if (!name || !email || !gender || !country) {
+        if (!name || !email) {
             return res.status(400).json({ message: "All fields are required" });
         }
         user.name = name;
@@ -146,7 +146,6 @@ router.delete('/payment/remove/:id', authMiddleware, async (req, res) => {
         return res.status(500).json({ message: "An error occurred. Please try again later.", error: error });
     }
 });
-
 
 // Update delivery address
 router.patch('/address/update/:addressId', authMiddleware, async (req, res) => {
